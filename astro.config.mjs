@@ -3,7 +3,7 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://efbe404.github.io",
+	site: "https://porto.fikyb.my.id",
 	base: "/",
 	outDir: './docs',
 	build: {
