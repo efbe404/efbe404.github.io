@@ -1,3 +1,9 @@
-Hi! I'm Fiky, A techno-geek that also like guns and games.
+Hi! I'm Fiky — a Network Engineer at Universitas Jember, full-stack developer, and all-around tech enthusiast.
 
-I'm a Network Engineer in Universitas Jember!, outside of that i'm a Full-Stack Programmer, and Airsoft-gun player. I love playing games too. in my free time i enjoy to explore about multimedia or tech-updates. Also Check my [GitHub profile](https://github.com/efbe404). See yaa!!
+I started my journey in networking and gradually expanded into web development and DevOps. This background allows me to understand how an application works from end to end—from backend logic and databases to servers, networking, deployment, and monitoring.
+
+Over the years, I've worked with a wide range of tools and technologies across the stack. On the networking side, I handle infrastructure design, troubleshooting, and network security. On the development side, I build web applications, APIs, and automation scripts — always with a focus on clean architecture and maintainability. I've also picked up DevOps practices along the way, including CI/CD pipelines, containerization, and server monitoring.
+
+I enjoy solving technical problems and building systems that are practical, reliable, and easy to maintain. Whether it's debugging a routing issue, deploying a web app, or optimizing a database query, I like getting my hands dirty across the entire stack.
+
+Outside of work, I'm into airsoft, gaming, and keeping up with the latest in tech. I'm always exploring new tools, frameworks, and ideas — you can check out what I've been working on over at my [GitHub profile](https://github.com/efbe404).
