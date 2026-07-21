@@ -1,54 +1,43 @@
-# Cassidy's blog template
+# Fiky's Blog
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/eab04209-5f7f-41ed-a8dd-c45a9ebb1834/deploy-status)](https://app.netlify.com/sites/blahg/deploys)
+Personal blog built with [Astro](https://astro.build), deployed to GitHub Pages.
 
-Hello, welcome. This is a blog ("blahg" is the proper spelling for Chicagoans) template. It's built with [Astro](https://astro.build), and uses [TinaCMS](https://tina.io) to edit the content!
+Live at [porto.fikyb.my.id](https://porto.fikyb.my.id)
 
-![cover](https://github.com/cassidoo/blahg/assets/1454517/b56ff04f-9499-48e7-be62-d9b422c4287d)
+## Stack
 
-## See the blahg
+- **Astro 5** — static site generator
+- **Markdown** — blog posts in `posts/`
+- **GitHub Pages** — hosting (built to `docs/`)
 
-[blahg.netlify.app](https://blahg.netlify.app/)
+## Commands
 
-## To use the template
+| Command           | Action                                      |
+| :---------------- | :------------------------------------------ |
+| `npm install`     | Install dependencies                        |
+| `npm run dev`     | Start local dev server at `localhost:4321`   |
+| `npm run build`   | Build production site to `./docs/`          |
+| `npm run preview` | Preview build locally before deploying      |
 
-- Connect to your chosen hosting provider (see Deploy to Netlify button below if you want to go that route, otherwise use the GitHub template button above and pick a different one)
-- Make an account at [tina.io](https://tina.io/)
-- Add your TinaCMS keys (see below)
-- Update `astro.config.mjs` with your domain
-- Edit `src/config.js`
-- Add your URL in line 1 of `public/robots.txt`
-- Add your links in `src/components/Header.astro`
-- Update the intro in `pages/about.md`
-- Edit the images in `public/` (optional)
-- Edit whatever tags you want in `tina/config.js` (optional)
+## Adding a Post
 
-After this, you can add your content to `posts/` with Markdown files, or with TinaCMS by going to `yoururl.com/admin`!
+Create a `.md` file in `posts/` with frontmatter:
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/cassidoo/blahg)
+```markdown
+---
+title: My New Post
+slug: my-new-post
+description: Short description here
+tags:
+  - technical
+added: 2026-07-21T00:00:00.000Z
+---
 
-And finally, please ping me (via social media, or in a GitHub Issue, or whatever) if you use this template! I would love to see your writing and subscribe to your RSS feed!
-
-## Run it yourself
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                          | Action                                                        |
-| :------------------------------- | :------------------------------------------------------------ |
-| `npm install`                    | Installs dependencies                                         |
-| `npm run dev`                    | Starts local dev server at `localhost:4321`                   |
-| `npx tinacms dev -c 'astro dev'` | Manually run local server if the regular command doesn't work |
-| `npm run build`                  | Build your production site to `./dist/`                       |
-| `npm run preview`                | Preview your build locally, before deploying                  |
-
-You go to `localhost:4321/admin/index.html` to see the CMS and use it. If you want to clone this for yourself, you'll need a `.env.development` file that has the following in it:
-
-```
-TINACLIENTID=<from tina.io>
-TINATOKEN=<from tina.io>
-TINASEARCH=<from tina.io>
+Post content here.
 ```
 
-If you get a remote GraphQL schema error, chances are you need to update TinaCMS, [details here](https://tina.io/docs/introduction/faq#how-do-i-resolve-the-local-graphql-schema-doesnt-match-the-remote-graphql-schema-errors)!
+Then `npm run build` and push.
 
-**Have fun!**
+## Credits
+
+Template based on [blahg](https://github.com/cassidoo/blahg) by [Cassidy Williams](https://github.com/cassidoo). Thank you for making such a clean and simple blog template!
