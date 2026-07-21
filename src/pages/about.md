@@ -1,4 +1,4 @@
-Hi! I'm Fiky — a Network Engineer at Universitas Jember, full-stack developer, and all-around tech enthusiast.
+Hi! I'm Fiky — a DevOps Engineer, full-stack developer, and all-around tech enthusiast.
 
 I started my journey in networking and gradually expanded into web development and DevOps. This background allows me to understand how an application works from end to end—from backend logic and databases to servers, networking, deployment, and monitoring.
 
