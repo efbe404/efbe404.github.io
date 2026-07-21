@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="en-us"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.ico"><meta name="generator" content="Astro v5.18.2"><!-- Primary Meta Tags --><title>Integrating Cloudflare R2 with Laravel and Custom Domain</title><meta name="title" content="Integrating Cloudflare R2 with Laravel and Custom Domain"><meta name="description" content="How to set up Cloudflare R2 as Laravel's filesystem using the S3 driver, with a custom domain for public file access."><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://porto.fikyb.my.id/post/cloudflare-r2-laravel-custom-domain/"><meta property="og:title" content="Integrating Cloudflare R2 with Laravel and Custom Domain"><meta property="og:description" content="How to set up Cloudflare R2 as Laravel's filesystem using the S3 driver, with a custom domain for public file access."><meta property="og:image" content="https://porto.fikyb.my.id/home-blog-card.png"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://porto.fikyb.my.id/post/cloudflare-r2-laravel-custom-domain/"><meta property="twitter:title" content="Integrating Cloudflare R2 with Laravel and Custom Domain"><meta property="twitter:description" content="How to set up Cloudflare R2 as Laravel's filesystem using the S3 driver, with a custom domain for public file access."><meta name="twitter:creator" content="@efbe404"><meta name="twitter:image" content="https://porto.fikyb.my.id/home-blog-card.png"><!-- RSS Link --><link rel="alternate" href="/rss.xml" type="application/rss+xml" title="Fiky Baharudin"><!-- Sitemap --><link rel="sitemap" href="/sitemap-index.xml"><link rel="stylesheet" href="/astrocss/_slug_.34osUcyj.css"></head><body> <header data-astro-cid-3ef6ksr2> <div class="header-section" data-astro-cid-3ef6ksr2> <div class="header-frame" data-astro-cid-3ef6ksr2> <h1 data-astro-cid-3ef6ksr2>Fiky Baharudin</h1> <h2 data-astro-cid-3ef6ksr2>A DevOps Engineer, Programmer and Hobbyist</h2> </div> <div class="img-frame" data-astro-cid-3ef6ksr2> <img id="propic" src="coba.jpg" alt="Fiky's look like" data-astro-cid-3ef6ksr2> </div> </div> </header> <nav data-astro-cid-3ef6ksr2> <a href="/" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> home </a>  <a href="/posts" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> posts </a>  </nav>  <main> <article>  <h1 class="article-title">Integrating Cloudflare R2 with Laravel and Custom Domain</h1> <span><time>Jul 21, 2026</time></span> <div class="undefined"><a class="tag" href="/tag/technical">
+#technical</a> <a class="tag" href="/tag/learning">
+#learning</a> </div> <hr> <div class="blog-post">  <p>Cloudflare R2 is an object storage service compatible with the Amazon S3 API. Because of this, Laravel can access R2 using the built-in <code>s3</code> driver through Flysystem.</p>
+<p>In this example:</p>
+<ul>
+<li>Bucket: <code>my-app-assets</code></li>
+<li>Custom domain: <code>assets.example.com</code></li>
+<li>Domain and bucket names have been anonymized.</li>
+</ul>
+<h2 id="1-install-the-s3-adapter">1. Install the S3 Adapter</h2>
+<p>Run:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#FFCB6B">composer</span><span style="color:#C3E88D"> require</span><span style="color:#C3E88D"> league/flysystem-aws-s3-v3</span></span></code></pre>
+<h2 id="2-create-an-r2-api-token">2. Create an R2 API Token</h2>
+<p>Go to the Cloudflare Dashboard:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>R2 Object Storage</span></span>
+<span class="line"><span>→ Manage R2 API Tokens</span></span>
+<span class="line"><span>→ Create API Token</span></span></code></pre>
+<p>Grant <code>Object Read &#x26; Write</code> permissions, preferably scoped to the specific bucket being used.</p>
+<p>Save the following information:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Access Key ID</span></span>
+<span class="line"><span>Secret Access Key</span></span>
+<span class="line"><span>Account ID</span></span>
+<span class="line"><span>Bucket Name</span></span></code></pre>
+<p>Never store these credentials directly in your repository.</p>
+<h2 id="3-configure-the-laravel-environment">3. Configure the Laravel Environment</h2>
+<p>Add the following to your <code>.env</code> file:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>FILESYSTEM_DISK=r2</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>R2_ACCESS_KEY_ID=your-access-key</span></span>
+<span class="line"><span>R2_SECRET_ACCESS_KEY=your-secret-key</span></span>
+<span class="line"><span>R2_BUCKET=my-app-assets</span></span>
+<span class="line"><span>R2_ENDPOINT=https://ACCOUNT_ID.r2.cloudflarestorage.com</span></span>
+<span class="line"><span>R2_URL=https://assets.example.com</span></span>
+<span class="line"><span>R2_REGION=auto</span></span></code></pre>
+<p>R2 uses the <code>auto</code> region. The value <code>us-east-1</code> can also be used by applications that don’t support it.</p>
+<p>Important notes:</p>
+<ul>
+<li><code>R2_ENDPOINT</code> is used by Laravel to communicate with the R2 API.</li>
+<li><code>R2_URL</code> is used to generate public URLs through the custom domain.</li>
+</ul>
+<p>Do not replace the API endpoint with the custom domain.</p>
+<h2 id="4-add-the-r2-disk">4. Add the R2 Disk</h2>
+<p>Open <code>config/filesystems.php</code> and add:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="php"><code><span class="line"><span style="color:#89DDFF">'</span><span style="color:#C3E88D">disks</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#89DDFF"> [</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#89DDFF">    '</span><span style="color:#C3E88D">r2</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#89DDFF"> [</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">driver</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#89DDFF"> '</span><span style="color:#C3E88D">s3</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">,</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">key</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#82AAFF"> env</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">R2_ACCESS_KEY_ID</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">),</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">secret</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#82AAFF"> env</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">R2_SECRET_ACCESS_KEY</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">),</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">region</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#82AAFF"> env</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">R2_REGION</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">,</span><span style="color:#89DDFF"> '</span><span style="color:#C3E88D">auto</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">),</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">bucket</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#82AAFF"> env</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">R2_BUCKET</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">),</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">endpoint</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#82AAFF"> env</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">R2_ENDPOINT</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">),</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">url</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#82AAFF"> env</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">R2_URL</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">),</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">use_path_style_endpoint</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#89DDFF"> false,</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">throw</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#89DDFF"> true,</span></span>
+<span class="line"><span style="color:#89DDFF">    ],</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#89DDFF">],</span></span></code></pre>
+<p>Then clear the configuration cache:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#FFCB6B">php</span><span style="color:#C3E88D"> artisan</span><span style="color:#C3E88D"> config:clear</span></span></code></pre>
+<h2 id="5-upload-a-file">5. Upload a File</h2>
+<p>Example upload through a controller:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F78C6C">use</span><span style="color:#EEFFFF"> Illuminate</span><span style="color:#89DDFF">\</span><span style="color:#EEFFFF">Http</span><span style="color:#89DDFF">\</span><span style="color:#EEFFFF">Request</span><span style="color:#89DDFF">;</span></span>
+<span class="line"><span style="color:#F78C6C">use</span><span style="color:#EEFFFF"> Illuminate</span><span style="color:#89DDFF">\</span><span style="color:#EEFFFF">Support</span><span style="color:#89DDFF">\</span><span style="color:#EEFFFF">Facades</span><span style="color:#89DDFF">\</span><span style="color:#EEFFFF">Storage</span><span style="color:#89DDFF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C792EA">public</span><span style="color:#C792EA"> function</span><span style="color:#82AAFF"> upload</span><span style="color:#89DDFF">(</span><span style="color:#FFCB6B">Request</span><span style="color:#89DDFF"> $</span><span style="color:#EEFFFF">request</span><span style="color:#89DDFF">)</span></span>
+<span class="line"><span style="color:#89DDFF">{</span></span>
+<span class="line"><span style="color:#89DDFF">    $</span><span style="color:#EEFFFF">request</span><span style="color:#89DDFF">-></span><span style="color:#82AAFF">validate</span><span style="color:#89DDFF">([</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">file</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#89DDFF"> [</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">required</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">,</span><span style="color:#89DDFF"> '</span><span style="color:#C3E88D">file</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">,</span><span style="color:#89DDFF"> '</span><span style="color:#C3E88D">max:10240</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">],</span></span>
+<span class="line"><span style="color:#89DDFF">    ]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#89DDFF">    $</span><span style="color:#EEFFFF">path </span><span style="color:#89DDFF">=</span><span style="color:#FFCB6B"> Storage</span><span style="color:#89DDFF">::</span><span style="color:#82AAFF">disk</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">r2</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">)-></span><span style="color:#82AAFF">putFile</span><span style="color:#89DDFF">(</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">uploads</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">,</span></span>
+<span class="line"><span style="color:#89DDFF">        $</span><span style="color:#EEFFFF">request</span><span style="color:#89DDFF">-></span><span style="color:#82AAFF">file</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">file</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">)</span></span>
+<span class="line"><span style="color:#89DDFF">    );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#89DDFF;font-style:italic">    return</span><span style="color:#82AAFF"> response</span><span style="color:#89DDFF">()-></span><span style="color:#82AAFF">json</span><span style="color:#89DDFF">([</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">path</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#89DDFF"> $</span><span style="color:#EEFFFF">path</span><span style="color:#89DDFF">,</span></span>
+<span class="line"><span style="color:#89DDFF">        '</span><span style="color:#C3E88D">url</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF"> =></span><span style="color:#FFCB6B"> Storage</span><span style="color:#89DDFF">::</span><span style="color:#82AAFF">disk</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">r2</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">)-></span><span style="color:#82AAFF">url</span><span style="color:#89DDFF">($</span><span style="color:#EEFFFF">path</span><span style="color:#89DDFF">),</span></span>
+<span class="line"><span style="color:#89DDFF">    ]);</span></span>
+<span class="line"><span style="color:#89DDFF">}</span></span></code></pre>
+<p>Resulting URL:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>https://assets.example.com/uploads/example.jpg</span></span></code></pre>
+<h2 id="6-connect-a-custom-domain">6. Connect a Custom Domain</h2>
+<p>In the Cloudflare Dashboard:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>R2</span></span>
+<span class="line"><span>→ Select Bucket</span></span>
+<span class="line"><span>→ Settings</span></span>
+<span class="line"><span>→ Custom Domains</span></span>
+<span class="line"><span>→ Connect Domain</span></span></code></pre>
+<p>Example domain:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>assets.example.com</span></span></code></pre>
+<p>The domain must be on a Cloudflare zone linked to the R2 account. A custom domain is recommended for production because it supports Cloudflare caching, WAF, access control, redirects, and analytics.</p>
+<h2 id="7-testing">7. Testing</h2>
+<p>Upload a simple file through Laravel Tinker:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#FFCB6B">php</span><span style="color:#C3E88D"> artisan</span><span style="color:#C3E88D"> tinker</span></span></code></pre>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="php"><code><span class="line"><span style="color:#FFCB6B">Storage</span><span style="color:#89DDFF">::</span><span style="color:#82AAFF">disk</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">r2</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">)-></span><span style="color:#82AAFF">put</span><span style="color:#89DDFF">(</span></span>
+<span class="line"><span style="color:#89DDFF">    '</span><span style="color:#C3E88D">test.txt</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">,</span></span>
+<span class="line"><span style="color:#89DDFF">    '</span><span style="color:#C3E88D">Hello from Laravel and Cloudflare R2</span><span style="color:#89DDFF">'</span></span>
+<span class="line"><span style="color:#89DDFF">);</span></span></code></pre>
+<p>Check the URL:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="php"><code><span class="line"><span style="color:#FFCB6B">Storage</span><span style="color:#89DDFF">::</span><span style="color:#82AAFF">disk</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">r2</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">)-></span><span style="color:#82AAFF">url</span><span style="color:#89DDFF">(</span><span style="color:#89DDFF">'</span><span style="color:#C3E88D">test.txt</span><span style="color:#89DDFF">'</span><span style="color:#89DDFF">);</span></span></code></pre>
+<p>Expected result:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>https://assets.example.com/test.txt</span></span></code></pre>
+<h2 id="common-issues">Common Issues</h2>
+<h3 id="upload-succeeds-but-url-doesnt-use-the-custom-domain">Upload succeeds but URL doesn’t use the custom domain</h3>
+<p>Make sure the following configuration is set:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>R2_URL=https://assets.example.com</span></span></code></pre>
+<p>Then run:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#FFCB6B">php</span><span style="color:#C3E88D"> artisan</span><span style="color:#C3E88D"> config:clear</span></span></code></pre>
+<h3 id="custom-domain-is-accessible-but-upload-fails">Custom domain is accessible but upload fails</h3>
+<p>Make sure <code>R2_ENDPOINT</code> uses the API endpoint:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>R2_ENDPOINT=https://ACCOUNT_ID.r2.cloudflarestorage.com</span></span></code></pre>
+<p>Not:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>R2_ENDPOINT=https://assets.example.com</span></span></code></pre>
+<h3 id="file-returns-http-404-or-403">File returns HTTP 404 or 403</h3>
+<p>Check that:</p>
+<ul>
+<li>The custom domain is active.</li>
+<li>The file actually exists in the bucket.</li>
+<li>The path and filename are correct.</li>
+<li>The bucket is intended for public access.</li>
+</ul>
+<h3 id="presigned-urls-dont-work-through-the-custom-domain">Presigned URLs don’t work through the custom domain</h3>
+<p>R2 presigned URLs only work using the S3 API domain:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>ACCOUNT_ID.r2.cloudflarestorage.com</span></span></code></pre>
+<p>Presigned URLs cannot use a custom domain directly.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Integrating Laravel with Cloudflare R2 requires two different URLs:</p>
+<pre class="astro-code material-theme-darker" style="background-color:#212121;color:#EEFFFF; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>API endpoint → upload, delete, and storage operations</span></span>
+<span class="line"><span>Custom domain → public file access</span></span></code></pre>
+<p>Keeping these separate is important. Using the custom domain as the API endpoint is one of the most common reasons why R2 connections from Laravel fail.</p>  </div> </article> </main> <h3 class="tag-title">View posts by tag</h3><div class="tags"><a class="tag" href="/tag/learning">
+#learning</a> <a class="tag" href="/tag/technical">
+#technical</a> </div> <footer data-astro-cid-sz7xmlte>
+&copy; 2026 Fiky Baharudin. This blog is inspired by <a href="https://github.com/cassidoo/blahg" data-astro-cid-sz7xmlte>cassidoo</a>! <3
+</footer>  <script>
+	let colors = ["#24d05a", "#eb4888", "#10a2f5", "#e9bc3f"];
+
+	function getRandomColor() {
+		return colors[Math.floor(Math.random() * colors.length)];
+	}
+
+	function setRandomLinkColor() {
+		Array.from(document.getElementsByTagName("a")).forEach((e) => {
+			e.style.textDecorationColor = getRandomColor();
+		});
+	}
+
+	function setColorHoverListener() {
+		Array.from(document.querySelectorAll("a, button")).forEach((e) => {
+			e.addEventListener("mouseover", setRandomLinkColor);
+		});
+	}
+
+	(function () {
+		setRandomLinkColor();
+		setColorHoverListener();
+	})();
+</script> </body></html>
